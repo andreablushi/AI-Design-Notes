@@ -1,0 +1,29 @@
+\section{Introduction}
+
+\subsection{Software 3.0}
+The term "Software 3.0," introduced by Andrej Karpathy, describes how AI is reshaping the way we build software.
+\begin{itemize}
+    \item \textbf{Software 1.0}: explicit rules written by programmers (if/else logic, loops).
+    \item \textbf{Software 2.0}: behavior learned from data (neural networks trained on examples).
+    \item \textbf{Software 3.0}: behavior specified in natural language (LLMs following prompts).
+\end{itemize}
+
+\subsection{Roles of AI}
+Over the past decade, AI has moved from a niche technology to a core part of software design. In practice, AI systems tend to play three main roles:
+\begin{itemize}
+    \item \textbf{AI as a Coding Agent}: AI systems can write, refactor, and review code, accelerating software development. 
+    Their output is largely deterministic because it is traditional code that can be inspected, tested, and debugged.
+    \item \textbf{AI as a Component}: In this case, AI is embedded within a larger system, and the surrounding architecture is designed around its capabilities and limitations. 
+    This is not entirely new: many traditional machine learning models already fit this pattern.
+    \item \textbf{AI as a User}: AI systems can also act as users of other systems, because they can consume inputs and generate outputs through your interfaces.
+    Today, system design must account for AI clients that can call APIs, read documentation, and operate on application data.
+\end{itemize}
+To design responsibly, we should distinguish when AI is unnecessary, when it is simply convenient, and when it is a true system component:
+\begin{itemize}
+    \item \textbf{No AI}: Use traditional software when rules are clear, logic is straightforward, and outputs are deterministic and easy to test.
+    \item \textbf{AI as a Convenience}: The problem and rules are well understood, but prompting is faster or simpler than writing code.
+    Outputs are still mostly predictable and testable, but reliability checks remain important.
+    \item \textbf{AI as a System Component}: Use AI when behavior is too complex or context-dependent to encode with explicit rules.
+    In these cases, conventional testing is harder because expected outputs are open-ended, and the value comes from handling ambiguity (for example, creative generation and open-ended Q\&A).
+\end{itemize}
+This course focuses primarily on AI as a system component, while still covering the other two cases.
