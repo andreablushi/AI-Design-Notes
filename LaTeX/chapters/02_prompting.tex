@@ -1,1 +1,43 @@
 \section{Prompting}
+Prompting is the process of designing inputs to LLMs in order to obtain the desired outputs.
+Effective prompting is essential when building AI systems because it directly affects output quality, reliability, and cost.
+
+In this course, we focus on prompting through \textbf{API calls}, not through consumer user interfaces.
+These two settings are different: user interfaces are engineered to be more robust and user-friendly, often adding features that improve prompt quality and enable complex interactions (for example, deep search).
+API calls are more direct and flexible: you interact with the model more closely, and you must design both the prompting strategy and conversation management yourself.
+At the same time, modern APIs can include built-in tools such as web search, code execution, and retrieval, which can further strengthen your prompting workflow.
+
+\subsection{Anatomy of a Prompt}
+A prompt typically consists of the following components:
+\begin{itemize}
+    \item \textbf{System Prompt}: Sets the persona, rules and constraints the model follows throughout the conversation (job description).
+    \item \textbf{User Prompt}: 
+    \item 
+\end{itemize}
+
+\subsection{API Parameters}
+When making API calls to an LLM, you can specify parameters that influence model behavior:
+\begin{itemize}
+    \item \textbf{Temperature}: Controls output randomness. Higher values (e.g., 0.8) usually produce more diverse and creative text, while lower values (e.g., 0.2) usually produce more focused and consistent text. In practice, the model samples from token probabilities, and temperature shapes that sampling.
+    \item \textbf{Top-p}: Controls diversity by sampling only from the smallest set of tokens whose cumulative probability reaches \texttt{p}. It is typically used as an alternative to temperature; in many cases, tuning one is enough.
+    \item \textbf{Max Tokens}: Caps response length, helping control both cost and verbosity.
+    \item \textbf{Stop Sequences}: Define one or more strings that cause generation to stop when encountered.
+\end{itemize}
+
+Beyond these parameters, other choices also influence output quality, especially \textbf{model selection} (for example, different model families) and \textbf{API type}.
+
+It is useful to distinguish between \textbf{completions} and \textbf{responses}: completions are generally \textbf{stateless} (each call starts fresh unless you resend context), while responses can be \textbf{stateful}, with server-side conversation state that can simplify multi-turn interactions.
+
+\subsection{Prompting Strategies}
+This section covers common prompting strategies that improve model performance.
+
+\subsubsection{Few-shot prompting}
+Few-shot prompting involves providing the model with a few examples of the desired output format or behavior within the prompt itself.
+This can help the model understand the task better and generate more accurate responses.
+
+\subsubsection{Chain-of-thought prompting}
+For complex tasks, you can prompt the model to break the problem into smaller steps and solve them sequentially.
+This often improves accuracy compared with requesting only a direct final answer.
+In practice, giving the model a clear step-by-step structure helps it organize intermediate reasoning before producing the final response.
+
+%#TODO: Structured Output and Prompt Template???

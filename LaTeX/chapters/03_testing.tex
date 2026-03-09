@@ -1,0 +1,12 @@
+\section{Testing}
+Testing LLM outputs is challenging because responses are inherently variable and context-dependent.
+Test cases that work for traditional software may not be sufficient for AI systems, and new strategies are needed to ensure reliability and quality.
+\\
+The following are common approaches to testing LLM outputs:
+\begin{itemize}
+    \item \textbf{Structural checks}: These are basic checks to ensure that the output is not empty, is within expected length bounds, and follows any required structural patterns (for example, JSON format).
+    \item \textbf{Property checks}: These checks verify specific properties of the output, such as whether a "one sentence" answer actually contains one sentence, or whether a generated summary captures the main points of the input text.
+    \item \textbf{LLM-as-judge}: This approach involves asking another LLM to evaluate the output based on predefined criteria, such as relevance, coherence, or factual accuracy. We'll cover this strategy in depth later in the course.
+\end{itemize}
+
+\subsection{LLM-as-Judge}

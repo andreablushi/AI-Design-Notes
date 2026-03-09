@@ -17,8 +17,10 @@ Over the past decade, AI has moved from a niche technology to a core part of sof
     This is not entirely new: many traditional machine learning models already fit this pattern.
     \item \textbf{AI as a User}: AI systems can also act as users of other systems, because they can consume inputs and generate outputs through your interfaces.
     Today, system design must account for AI clients that can call APIs, read documentation, and operate on application data.
+    This is introducing a new question: Who are you building for? Human users, AI users, or both?
 \end{itemize}
-To design responsibly, we should distinguish when AI is unnecessary, when it is simply convenient, and when it is a true system component:
+To design responsibly, we should distinguish when AI is unnecessary, when it is simply convenient, and when it is a true system component.
+Those choices are important since they respond to the question "What are you building for?" and this mainly depends on how reniewable and fixed we want our outputs.
 \begin{itemize}
     \item \textbf{No AI}: Use traditional software when rules are clear, logic is straightforward, and outputs are deterministic and easy to test.
     \item \textbf{AI as a Convenience}: The problem and rules are well understood, but prompting is faster or simpler than writing code.
@@ -27,3 +29,12 @@ To design responsibly, we should distinguish when AI is unnecessary, when it is 
     In these cases, conventional testing is harder because expected outputs are open-ended, and the value comes from handling ambiguity (for example, creative generation and open-ended Q\&A).
 \end{itemize}
 This course focuses primarily on AI as a system component, while still covering the other two cases.
+
+\subsection{Challenges}
+Creating AI systems is more complex than traditional software because of the following challenges:
+\begin{itemize}
+    \item \textbf{Getting a single call right}: LLMs are not deterministic, and their outputs can vary widely based on the prompt, which needs to be accurately designed to get the desired output.
+    \item \textbf{Managing a conversation}: When building a system that interacts with an LLM, you need to manage the context across the conversation, which can make the costs grow rapidly.
+    \item \textbf{Long-term memory}: LLMs have limited context windows, so you need to design strategies for storing and retrieving information (like preferences or conversation history) over time.
+    \item \textbf{Enterprise/Community knowledge}: LLMs could use private data to train, so we need to design systems that can leverage this knowledge while respecting privacy and security concerns, also of our enterprise.
+\end{itemize}
