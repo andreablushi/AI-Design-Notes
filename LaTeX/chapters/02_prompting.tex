@@ -2,17 +2,23 @@
 Prompting is the process of designing inputs to LLMs in order to obtain the desired outputs.
 Effective prompting is essential when building AI systems because it directly affects output quality, reliability, and cost.
 
-In this course, we focus on prompting through \textbf{API calls}, not through consumer user interfaces.
-These two settings are different: user interfaces are engineered to be more robust and user-friendly, often adding features that improve prompt quality and enable complex interactions (for example, deep search).
-API calls are more direct and flexible: you interact with the model more closely, and you must design both the prompting strategy and conversation management yourself.
-At the same time, modern APIs can include built-in tools such as web search, code execution, and retrieval, which can further strengthen your prompting workflow.
+In this course, we focus on prompting through \textbf{API calls} rather than consumer user interfaces.
+The two settings differ significantly: interfaces are designed to be robust and user-friendly, often adding features that improve prompts and support richer interactions (for example, deep search).
+API usage is more direct and flexible: you work closer to the model and must design both the prompting strategy and conversation management.
+Modern APIs may also expose built-in tools such as web search, code execution, and retrieval, which can further improve results.
+\\
+In short, API prompting is developer-centric, while user interfaces are user-centric.
+For instance, obtaining structured output can be difficult in many interfaces but straightforward through an API call.
 
 \subsection{Anatomy of a Prompt}
 A prompt typically consists of the following components:
 \begin{itemize}
     \item \textbf{System Prompt}: Sets the persona, rules and constraints the model follows throughout the conversation (job description).
-    \item \textbf{User Prompt}: 
-    \item 
+    Conventionally, the system prompt is the same across all calls, but needs to be repeated since the API is stateless.
+    \item \textbf{User Prompt}: The actual task or question you want the model to address. 
+    It can include the input data, examples and instructions on how to format the output.
+    Conventionally, the user prompt is the part that changes across calls, depending on the specific task or input data.
+    \item \textbf{Parameters}: These are settings that influence the model's behavior, such as temperature, top-p, max tokens, and stop sequences.
 \end{itemize}
 
 \subsection{API Parameters}
@@ -22,6 +28,8 @@ When making API calls to an LLM, you can specify parameters that influence model
     \item \textbf{Top-p}: Controls diversity by sampling only from the smallest set of tokens whose cumulative probability reaches \texttt{p}. It is typically used as an alternative to temperature; in many cases, tuning one is enough.
     \item \textbf{Max Tokens}: Caps response length, helping control both cost and verbosity.
     \item \textbf{Stop Sequences}: Define one or more strings that cause generation to stop when encountered.
+    \item \textbf{Frequency Penalty}: Penalizes new tokens based on their existing frequency in the text so far, reducing repetition.
+    \item \textbf{Presence Penalty}: Penalizes new tokens based on whether they appear in the text so far, encouraging the model to talk about new topics.
 \end{itemize}
 
 Beyond these parameters, other choices also influence output quality, especially \textbf{model selection} (for example, different model families) and \textbf{API type}.
@@ -30,6 +38,26 @@ It is useful to distinguish between \textbf{completions} and \textbf{responses}:
 
 \subsection{Prompting Strategies}
 This section covers common prompting strategies that improve model performance.
+Calibrating specifically is a key part of the design process, as overspecifying or underspecifying the prompt can lead to suboptimal outputs.
+Cutting redudancy and keeping a good structure permits to get better results, since the model follows literally the instructions 
+
+The best strategy to get a good prompt is to iteratively test and refine it, starting with a simple version and gradually adding complexity as needed.
+
+\subsubsection{Prompt Structure}
+The suggested structure for a prompt is the following:
+\begin{itemize}
+    \item \textbf{Role (optional)}: Define the role or persona the model should adopt (for example, "You are a helpful assistant").
+    \item \textbf{Goal}: Clearly state in one sentence the overall goal or task (for example, "Summarize the following text in one sentence").
+    \item \textbf{Context}: Provide any necessary background information, data, or examples that the model needs to complete the task.
+    \item \textbf{Constraints}: Specify any rules like audience, length limits and tone.
+    \item \textbf{Output Format}: Define the expected format of the output (for example, "Return a JSON object with the following fields...").
+    \item \textbf{Verify}: Ask the model to check its own output for errors or inconsistencies, which can help improve reliability.
+\end{itemize}
+
+%TODO: Not explained in class, but in the slide
+\subsubsection{Direct instruction vs Role prompting}
+
+\subsubsection{Scope and Structure}
 
 \subsubsection{Few-shot prompting}
 Few-shot prompting involves providing the model with a few examples of the desired output format or behavior within the prompt itself.
