@@ -44,28 +44,40 @@ Cutting redudancy and keeping a good structure permits to get better results, si
 The best strategy to get a good prompt is to iteratively test and refine it, starting with a simple version and gradually adding complexity as needed.
 
 \subsubsection{Prompt Structure}
+Defining a clear \textbf{scope} for the model is crucial to prevent it from going off-topic or generating irrelevant information.
+To better handle complex tasks, it's also important to use \textbf{structure formatting} in the prompt, which can help guide the model's attention and improve the quality of the output.
+An example is to separate instructions, input data and output format into distinct sections, using clear headings or bullet points.
+\\
 The suggested structure for a prompt is the following:
 \begin{itemize}
     \item \textbf{Role (optional)}: Define the role or persona the model should adopt (for example, "You are a helpful assistant").
-    \item \textbf{Goal}: Clearly state in one sentence the overall goal or task (for example, "Summarize the following text in one sentence").
+    This differetiates the \textbf{direct instruction} prompting strategy, where you simply provide clear, literal instructions for simple tasks, from the \textbf{role prompting} strategy, where you shape the tone, vocabulary and depth of the response.
+    \item \textbf{Goal}: Clearly state in one sentence the overall goal or task (for example, "Summarize the following text in one sentence"). (This last part doesn't improve factual correctness)
     \item \textbf{Context}: Provide any necessary background information, data, or examples that the model needs to complete the task.
     \item \textbf{Constraints}: Specify any rules like audience, length limits and tone.
     \item \textbf{Output Format}: Define the expected format of the output (for example, "Return a JSON object with the following fields...").
     \item \textbf{Verify}: Ask the model to check its own output for errors or inconsistencies, which can help improve reliability.
 \end{itemize}
-
-%TODO: Not explained in class, but in the slide
-\subsubsection{Direct instruction vs Role prompting}
-
-\subsubsection{Scope and Structure}
+Also \textbf{where you place instructions} relative to data significantly affects the quality, especially with long data.
+The common rule is to place long data first, instructions last and query at the very end.
 
 \subsubsection{Few-shot prompting}
 Few-shot prompting involves providing the model with a few examples of the desired output format or behavior within the prompt itself.
 This can help the model understand the task better and generate more accurate responses.
+\\
+It's important to choose diverse examples covering typical cases and edge cases, and keep a consistent format across examples to help the model learn the pattern.
+Also ordering examples matters: place the most similar examples last, closer to the actual task, as the model tends to pay more attention to recent context.
 
 \subsubsection{Chain-of-thought prompting}
-For complex tasks, you can prompt the model to break the problem into smaller steps and solve them sequentially.
-This often improves accuracy compared with requesting only a direct final answer.
-In practice, giving the model a clear step-by-step structure helps it organize intermediate reasoning before producing the final response.
+LLMs generate tokens sequentially.
+When you force intermediate reasoning steps, each subsequent token is conditioned on better context.
+In other words, the model "thinks" by writing, and by prompting it to write down its reasoning process, you can often improve the quality of the final answer, especially for complex tasks that require multiple steps of reasoning.
+\\
+There are several variations of this strategy:
+\begin{itemize}
+    \item \textbf{Zero-shot CoT}: You simply ask the model to explain its reasoning process before giving the final answer, without providing any examples.
+    \item \textbf{Few-shot CoT}: You provide examples of the reasoning process along with the final answer, which can help the model learn how to structure its reasoning.
+    \item \textbf{Structured CoT}: You explicitly define the intermediate steps or sub-tasks that the model should follow, which can help guide its reasoning process more effectively.
+\end{itemize}
 
-%#TODO: Structured Output and Prompt Template???
+%#TODO: Other slides remaining: from schema extraction and on
