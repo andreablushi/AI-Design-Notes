@@ -3,10 +3,14 @@ Prompting is the process of designing inputs to LLMs in order to obtain the desi
 Effective prompting is essential when building AI systems because it directly affects output quality, reliability, and cost.
 
 In this course, we focus on prompting through \textbf{API calls} rather than consumer user interfaces.
-The two settings differ significantly: interfaces are designed to be robust and user-friendly, often adding features that improve prompts and support richer interactions (for example, deep search).
-API usage is more direct and flexible: you work closer to the model and must design both the prompting strategy and conversation management.
-Modern APIs may also expose built-in tools such as web search, code execution, and retrieval, which can further improve results.
-\\
+The two settings differ significantly: 
+\begin{itemize}
+    \item \textbf{User Interfaces}: These are designed for end-users and often include features that help guide the user in crafting effective prompts, such as templates, examples, and interactive feedback.
+    They usually don't allow you to access the model directly, so you have less control over the prompting process, but the interface itself can help users get better results.
+    \item \textbf{API Calls}: When using APIs, you have more control and flexibility over the prompting process, 
+    as you are talking directly to the model. You have to design the prompt yourself, and you can also manage the conversation state and context more effectively.
+    Modern APIs may also expose built-in tools such as web search, code execution, and retrieval, which can further improve results.
+\end{itemize}
 In short, API prompting is developer-centric, while user interfaces are user-centric.
 For instance, obtaining structured output can be difficult in many interfaces but straightforward through an API call.
 

@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+    \node[draw, rectangle, rounded corners, minimum width=3.4cm, minimum height=1.1cm] (prompt) at (0,0) {Prompt Design};
+    \node[draw, rectangle, rounded corners, minimum width=3.4cm, minimum height=1.1cm] (execute) at (4.3,0) {Run the Tests};
+    \node[draw, rectangle, rounded corners, minimum width=3.4cm, minimum height=1.1cm] (evaluate) at (8.6,0) {Evaluate Results};
+
+    \draw[->] (prompt) -- (execute);
+    \draw[->] (execute) -- (evaluate);
+    \draw[->] (evaluate.south) to[out=-60, in=-120] node[above] {Refine Prompt} (prompt.south);
+\end{tikzpicture}
