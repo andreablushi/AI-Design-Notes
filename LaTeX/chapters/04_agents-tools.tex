@@ -1,1 +1,83 @@
 \section{Stateful Agents}
+The models discussed thus far are \textbf{stateless agents}. 
+This means they do not maintain a memory of previous interactions; instead, they treat every request as an independent event and respond based solely on the current input.
+
+To illustrate this, imagine you have access to an infinite sequence of \textit{superhumans}. 
+You approach each one and ask exactly one question. While each superhuman provides a brilliant response 
+to that specific query, they possess no knowledge of your previous conversations with their predecessors. 
+Every time you move to a new person, the context is reset to a blank slate. This behavior characterizes a stateless system.
+
+In contrast, a \textbf{stateful agent} retains information across multiple turns. 
+It stores previous inputs and outputs—often referred to as the \textit{conversation history} or \textit{context}—allowing 
+it to understand follow-up questions and maintain continuity in a dialogue.
+
+In this section we will explore various techniques used in agents design, from simple stateless agents to more complex stateful ones.
+
+\subsection{Stateless}
+As mentioned, stateless agents do not maintain any memory of past interactions. The \texttt{chat completition}
+api is an example of a stateless agent by design.
+\begin{lstlisting}[language=Python]
+# Turn 1: tell the model your name
+r1 = client.chat.completions.create(
+    model="gpt-4.1-mini",
+    messages=[{"role": "user", "content": "My name is Alice."}],
+)
+# Turn 1: "Nice to meet you, Alice!"
+
+# Turn 2: ask for your name  but we DON'T send turn 1
+r2 = client.chat.completions.create(
+    model="gpt-4.1-mini",
+    messages=[{"role": "user", "content": "What is my name?"}],
+)
+# Turn 2: "I don't have access to your name."
+\end{lstlisting}
+The model can't answer because it literally never saw the first message.
+
+Although this type of agents seems pretty useless, they can be fine for single-shot tasks,
+like writing a poem, generating an image, or answering a question.
+
+\subsection{Default Stateful Agents}
+Open AI \texttt{Response API} can be used to create stateful agents.
+\begin{lstlisting}[language=Python]
+resp1 = client.responses.create(model="gpt-4.1-mini", input="My name is Alice.")
+
+resp2 = client.responses.create(
+    model="gpt-4.1-mini",
+    input="What is my name?",
+    previous_response_id=resp1.id,   # server remembers turn 1
+)
+# "Your name is Alice."
+\end{lstlisting}
+This is convenient, but it's a black box approach. We have no control over what the model
+remembers and how it uses that information.
+
+All the next techniques we will manage the state ourselves, giving us more control and flexibility.
+
+\subsection{Full History}
+A first approach to create a stateful agent is to send with each request the full conversation history.
+This is obviously the most straightforward way to maintain context, but it can quickly become inefficient as the conversation grows longer.
+In fact, each time we send a new message, the number of tokens we need to send increases quadratically, since we need to resend all previous messages.
+
+This is not only inefficient in terms of latency and cost, but it can also lead to fulling the model's context window,
+which can cause lower quality responses or even errors.
+
+\subsection{Sliding Window}
+To mitigate the issues of the full history approach, we can use a \textbf{sliding window} technique.
+Instead of sending the entire conversation history, we only send the most recent $N$ messages, where $N$ is a predefined window size.
+This way, we can maintain some context while keeping the number of tokens manageable and constant over time.
+
+The downside of this approach is that we might lose important information from earlier in the conversation, 
+which can lead to less coherent responses if the model relies on that information.
+
+\subsection{Summarization}
+To address the limitations of the sliding window technique, we have to find a way to retain important information from the conversation without sending the entire history.
+This is where \textbf{summarization} comes into play.
+The idea is to periodically summarize the conversation history and send the summary along with the most recent messages. 
+This way, we can keep the context manageable while still retaining important information from earlier in the conversation.
+
+The summarization is usually done by the model itself. Along with the user message,
+we can provide the model with the current summary and ask it to update the summary based on the new message.
+
+This way, the memory stays bounded, without the loss of informations
+
+\subsection{Long-Term Memory}
