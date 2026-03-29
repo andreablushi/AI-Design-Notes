@@ -1,0 +1,42 @@
+\section{Statistical Testing}%#TODO: Needs refactoring
+ML and statistics are closely related, but significance testing is rarely used in ML experiments due to large sample sizes and emphasis on replication over statistical significance.
+Replication is key, but often challenging in practice, so we can still use statistical testing as a tool to assess the reliability of our results.
+
+\subsection{True metrics vs Estimated metrics}
+When we evaluate a model, we usually imagine that data a sampled from $p(x)$, and we want a classifier that minimizes the error on the true distribution, not the one we have in our dataset.
+However, we can only compute the statistic on the dataset, which is called the \textbf{sample metric}.
+All metrics have a true value defined on the true distribution, but we can only compute an estimate of it based on the data we have.
+\\\\
+This brings to us the need to prove how much near the sample metric is to the true metric, and that is not just a noise.
+
+\subsubsection{Confidence Intervals}
+One way to do this is to compute confidence intervals, which are ranges of values that are likely to contain the true metric with a certain level of confidence.
+This helps us understand the uncertainty around our estimate and make more informed decisions about model performance.
+\\\\
+This can be done using various test samples, making the sample metric a random variable.
+This makes the sample metric vary across different samples, and we can use this variability to compute confidence intervals.
+\\\\
+The size of the confidence interval depends on two factors:
+\begin{itemize}
+    \item \textbf{True metric}
+    \item \textbf{Sample size}
+\end{itemize}
+If you have not the luxury of a large sample size, you can do some statistical testing to understand how much the sample metric is close to the true metric.
+
+\paragraph{Continuous Metrics}
+When computing a continuous metric, such as the mean squared error $m$, we assume individual observations are distributed around a true metric.
+The sample mean (computed from the results of the testing) serves as a point estimate of this expectation, but it is itself a random variable.
+Across different samples, the sample mean follows a Student's t-distribution which converges to a normal distribution for sample sizes $n > 30$, centered at the true mean.
+This allows us to compute confidence intervals for the true metric based on the sample mean and its variability.
+
+\paragraph{Remark:} Since we are working with estimated value, also the confidence interval is an estimate, and it is not guaranteed to contain the true metric with the specified confidence level.
+So it relative to the test sample we have, and its important to understand that the confidence interval is not a fixed range, but it can vary across different samples.
+
+\paragraph{Standard Deviation and Standard Error:} 
+The standard deviation of the sample metric is a measure of how much the sample metric varies across different samples.
+The standard error is the standard deviation of the sample mean, which is the sample metric in this case, and it is computed as the standard deviation divided by the square root of the sample size.
+\\\\
+The standard deviation is the measure of \textbf{spread} of the sample metric, meanwhile the confidence interval and standard error are measures of \textbf{uncertainty} around the true metric.
+
+\subsection{How much randomness affects the results?}
+

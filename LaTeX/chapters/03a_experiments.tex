@@ -1,4 +1,4 @@
-\section{Methodology}
+\section{Experiments}%#TODO: Needs refactoring 
 In this section, we will discuss the basic recipe for "evaluating" in \textbf{software 2.0} or more in general in machine learning.
 \\\\
 We'll mostly focus on binary classification problems, where the goal is to classify inputs into two categories (for example, "spam" vs "not spam", or "positive" vs "negative").
@@ -71,3 +71,21 @@ You need to maintain the ordering, and split the dataset based on time, using th
 However, if your data has a timestamp, but there's no meaningful information in the ordering (like in email classification) seeing from the future doesn't usually give you much of an unfair advantage in the task.
 \\\\
 If you want to apply cross validation to temporal data, that takes a small portion of initial data as the training set and then iteratively adds more data to the training set, while validating on the next portion of data, until you reach the end of the dataset.
+
+\paragraph{Final remark:}
+Philosophically talking, when in doubt make sure that the evaluation setting accurately simulates production, and that the validation setting accurately simulates the evaluation setting,
+
+\subsection{Experiment Design}
+Now that we now how to experiment, what experiments should we run? Which hyperparameters should we test? 
+Basically as long as you are not looking at the test set, you can do whatever to like.
+
+\subsubsection{Hyperparameter Tuning}
+When tuning hyperparameters, we have the following options:
+\begin{itemize}
+    \item \textbf{Trial and Error}: This is the most basic approach, where you simply try different combinations of hyperparameters and see which one performs best on the validation set.
+    This is driven by intuition and experience, and it can be time-consuming, especially if you have a large number of hyperparameters to tune.
+    \item \textbf{Grid Search}: This is an automated approach, where you define a grid of relevant hyperparameter values, and the algorithm trains and evaluates a model for each combination of hyperparameters in the grid.
+    This can be computationally expensive, especially if the grid is large, but it ensures that you are exploring a wide range of hyperparameter combinations.
+    \item \textbf{Random Search}: This is another automated approach, where you randomly sample combinations of hyperparameters from a defined distribution, and train and evaluate a model for each combination.
+    This can be more efficient than grid search, especially if you have a large number of hyperparameters, since it allows you to explore a wider range of combinations.
+\end{itemize}
