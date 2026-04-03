@@ -2,5 +2,5 @@
 *.d
 
 #Gitignore for LaTeX projects
-/LaTeX/build/
+build/
 .vscode/

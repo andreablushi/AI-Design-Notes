@@ -78,6 +78,33 @@ This way, we can keep the context manageable while still retaining important inf
 The summarization is usually done by the model itself. Along with the user message,
 we can provide the model with the current summary and ask it to update the summary based on the new message.
 
-This way, the memory stays bounded, without the loss of informations
+This way, the memory stays bounded, without the loss of information.
+
+A few tips for effective summarization prompts:
+\begin{itemize}
+    \item Use a structured format for the summary, organizing information into categories (e.g., "Facts", "Opinions", "Actions", etc.);
+    \item Set a maximum length for the summary to ensure it remains concise and focused on the most relevant information;
+    \item Resolve contradictions in the summary by asking the model to identify and address any conflicting information.
+\end{itemize}
 
 \subsection{Long-Term Memory}
+Every technique we have seen so far is based on the idea of a \textit{working memory}, that dies whenever the conversation ends.
+However, in many applications we want to have a \textit{long-term memory} that persists across multiple conversations and sessions. 
+
+This is usually achieved by:
+\begin{itemize}
+    \item Once the conversation ends, extract important information. Ask the LLM to pull out structured facts worth remembering: facts, preferences, decisions, expertise, etc;
+    \item Store this information in an external database;
+    \item When a new conversation starts, retrieve relevant information from the database and inject it into the prompt.
+\end{itemize}
+This is the actual pattern used behind the OpenAI \texttt{ChatGPT} memory feature.
+
+\subsection{When to use which pattern}
+Each strategy can be used in different scenarios, depending on the specific requirements of the application and the constraints of the model being used.
+\begin{itemize}
+    \item \textbf{Stateless}: suitable for single shot tasks (e.g., translate, classify);
+    \item \textbf{Full History}: suitable for short conversations;
+    \item \textbf{Sliding Window}: suitable for longer conversations where only the most recent context is relevant;
+    \item \textbf{Summarization}: suitable for long conversations where important information needs to be retained without exceeding the context window;
+    \item \textbf{Long-Term Memory}: suitable for applications that require personalization or have returning users, where information needs to persist across sessions.
+\end{itemize}
