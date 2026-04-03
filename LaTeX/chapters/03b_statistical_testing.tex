@@ -112,7 +112,7 @@ In order to handle class imbalance, we need to trade-off between precision and r
 \\
 To help us in this trade-off, we can plot the precision and recall for different classifier.
 
-\subsubsection{TPR and FPR}
+\subsubsection{TPR and FPR - ROC space}
 \textbf{TPR} (True Positive Rate) is the ratio of true positives to the total number of actual positives, while \textbf{FPR} (False Positive Rate) is the ratio of false positives to the total number of actual negatives.
 We want to maximize TPR and minimize FPR, but as before there is a trade-off between the two.
 The optimal space is TPR/FPR = 1, which means that we are maximizing TPR and minimizing FPR at the same time, this is called the \textbf{ROC space} (Receiver Operating Characteristic).
@@ -134,8 +134,21 @@ Then coloring binary the points based on the predicted class (after thesholding)
 The AUC (Area Under the Curve) is a metric that summarizes the performance of a classification model across all possible thresholds.
 It is computed as the area under the ROC curve, and can be used to compare different models.
 If we normalize the coverage matrix, we get the ROC curve, and the AUC is the area under this curve.
+The AUC (in ROC space) is an estimate of the probability that a ranking classifier puts a randomly drawn pair of positive and negative examples in the correct order.
+\\\\
+Lets now look how to works for another type of classifier.
+The decision tree is an example of a \textbf{partitioning classifier}, and how we get a ranking from a classifier that depends entirely on the model class, in other words, it depends on the way the model is built.
+\\
+If we choose to use the proportion of positive point for each segment (leaf) as the score, and we then put all the points in one region on the same level in the ranking.
+This means that some pairs of points will have the same score, and this can lead to ties in the ranking.
+Then, for large datasets, these regions will not contribute much to the total curve.
 
-\subsubsection{Ranking Decision} %TODO: Go on from this point
+\subsubsection{Precision-Recall Curve}
+The Precision-Recall curve is another way to evaluate the performance of a classification model, similar to the ROC curve, but in the axis we have precision and recall instead of TPR and FPR.
+The area under the Precision-Recall curve (AUC-PR) can be used as a metric to compare different models, especially in cases of class imbalance, where the ROC curve can be misleading.
+\\
+However in some cases, the Precision-Recall curve can be more difficult to interpret than the ROC curve, since it is not normalized and it can be affected by the class imbalance in a different way than the ROC curve.
+Both curves can be useful in different scenarios, it's suggested to plot both.
 
 \subsubsection{Use of Metrics}
 There are many others metrics that can be used to evaluate classification models, and they can be applied to all the sets (training, validation, and test set).
@@ -144,4 +157,18 @@ Meanwhile, the \textbf{validation accuracy} is used to tune the hyperparameters 
 And the \textbf{training accuracy}, which is used in comparison with the validation accuracy (difference \textbf{generalization gap}) to understand if the model is overfitting or underfitting the data.
 It's important to note that it's not used for evaluating on the training set.
 
-\subsection{}
+\subsection{No Free Lunch Theorem}
+A question that often aries is: which classifier, model, search methods is the best?
+The aim is to make a guess before seeing data, but the No Free Lunch Theorem states that is not possible.
+\\\\
+If you average over every possible problem, no optimization or learning algorithm is better than any other.
+An algorithm only looks good when the problem happens to match its assumptions.
+This means that there is no universally best model or algorithm. (\textbf{problem of induction})
+\\\\
+The \textbf{inductive bias} of a learning algorithm or model are those assumptions about the domain that are explicitly or implicitly hardcoded into the model.
+In other words, the inductive bias is the set of assumptions that a model makes about the data in order to generalize from the training data to unseen data.
+As a computer scientist, we need to figure out which of the many possible inductive biases is the best for our problem.
+For instance a linear model has a strong inductive bias towards linear relationships between features and the target variable.
+\\\\
+Finally, when two models explain the data equally well, we usually prefer the simpler one.
+The intuition is that simple patterns are more likely than very complex ones, so learning methods often include a built-in \textbf{bias toward simplicity}.
