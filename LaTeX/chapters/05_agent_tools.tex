@@ -1,0 +1,54 @@
+\section{Agent Tools}
+LLMs by themselves are very powerful when it comes to understanding and generating human language.
+However, they can be even more powerful when combined with external tools that allow them to perform specific tasks or access up-to-date information. 
+In this section, we will explore some of the tools that can be integrated with LLMs to enhance their capabilities.
+
+They enable a wide range of applications, such as:
+\begin{itemize}
+    \item \textbf{Computational tools:} perform complex calculations, data analysis, and other computational tasks that may be beyond their native capabilities;
+    \item \textbf{Knowledge retrieval tools:} access external databases, APIs, or the internet to retrieve up-to-date information;
+    \item \textbf{Action execution tools:} interact with other software or hardware to perform actions based on the LLMs output. 
+\end{itemize}
+
+\subsection{Register a Tool}
+LLM providers usually offers ready-to-use tools, such as a web search tool, code interpreter, file search, and more.
+However, they also allow users to create and register custom tools that can be tailored to specific use cases or domains.
+
+To register a tool, we first need to define its schema, which includes the tool's name, description, and input parameters.
+An example of a tool schema is shown below:
+\begin{lstlisting}[language={}]
+    {
+    "type": "function",
+    "function": {
+        "name": "explore_data",
+        "description": "Inspect dataset schema, missing values, and candidate targets. Call first when the dataset structure is unknown.",
+        "parameters": {
+        "properties": {
+            "sample_rows": {"type": "integer", "description": "Number of sample rows to return"}
+        },
+        "required": ["sample_rows"]
+        }
+    }
+    }
+\end{lstlisting}
+
+\subsection{Multi-Tool loop}
+Real world problems often require the use of multiple tools in a sequence, where the output of one tool serves as the input for another.
+The model must reason about which tool to call next based on what it's learned so far.
+
+\paragraph{Example: Data Analysis Agent}
+Consider the following example, of a data analysis agent. The following tools are registered:
+\begin{itemize}
+    \item \textbf{Explore Data:} inspects the dataset schema, missing values, and candidate targets. it has no preconditions;
+    \item \textbf{Cluster Data:} performs clustering on the dataset, discovering natural groupings in the data. Needs a numeric column as input;
+    \item \textbf{Classify Data:} performs regression or classification on the dataset, depending on the target variable. Needs a target column as input.
+\end{itemize}
+
+Different queries may require different sequences of tools. For example:
+\begin{itemize}
+    \item \textbf{Query 1:} "What kind of data do I have?" $\rightarrow$ Explore Data;
+    \item \textbf{Query 2:} "Are there any natural customer segments in the data?" $\rightarrow$ Explore Data $\rightarrow$ Cluster Data;
+    \item \textbf{Query 3:} "Segments and churn prediction for age=29, income=50k..." $\rightarrow$ Explore Data $\rightarrow$ Cluster Data $\rightarrow$ Classify Data.
+\end{itemize}
+
+\subsection{The Control Problem}
