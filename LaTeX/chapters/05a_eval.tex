@@ -137,47 +137,71 @@ Machine Learning and statistics are closely related, but significance testing is
 due to large sample sizes and emphasis on replication over statistical significance.
 Replication is key, but often challenging in practice, so we can still use statistical testing as a tool to assess the reliability of our results.
 
-\begin{comment}
-    #TODO: review from this onwards
-\end{comment}
 \subsubsection{True metrics vs Estimated metrics}
-When we evaluate a model, we usually imagine that data a sampled from $p(x)$, and we want a classifier that minimizes the error on the true distribution, not the one we have in our dataset.
-However, we can only compute the statistic on the dataset, which is called the \textbf{sample metric}.
-All metrics have a true value defined on the true distribution, but we can only compute an estimate of it based on the data we have.
-\\\\
-This brings to us the need to prove how much near the sample metric is to the true metric, and that is not just a noise.
+When we evaluate a model, we usually imagine data being sampled from a probability distribution $p(x)$.
+What we really want is to develop a classifier that performs well on any data point sampled from the original distribution.
+
+Imagine for example we sample one data point from the distribution, and we classify it with some classifier $c$.
+The probability of $c$ making a correct prediction on this data point is the \textbf{true accuracy}.
+However, we can't compute the true accuracy, since we don't have access to the entire distribution, but only to a finite sample of data points.
+
+Instead, what we usually do is to compute the so-called \textbf{sample accuracy}. 
+We take a large enough sample of data points from the distribution, and we compute the accuracy of the classifier on this sample, which is an estimate of the true accuracy.
+
+Now, given the estimated sample accuracy, the question is: 
+how sure can we be that the true accuracy is close to the sample accuracy?
 
 \subsubsection*{Confidence Intervals}
-One way to do this is to compute confidence intervals, which are ranges of values that are likely to contain the true metric with a certain level of confidence.
+One way to quantify the uncertainty around our estimate is to compute confidence intervals, which are ranges of values that are likely 
+to contain the true metric with a certain level of confidence.
 This helps us understand the uncertainty around our estimate and make more informed decisions about model performance.
-\\\\
-This can be done using various test samples, making the sample metric a random variable.
-This makes the sample metric vary across different samples, and we can use this variability to compute confidence intervals.
-\\\\
+
+The confidence interval is computed based on the variability of the sample metric across different samples, and it gives us a range of values within which we can be reasonably confident that the true metric lies.
+
 The size of the confidence interval depends on two factors:
 \begin{itemize}
-    \item \textbf{True metric}
-    \item \textbf{Sample size}
+    \item \textbf{True metric}: If the true metric is close to 0 or 1, the confidence interval will be narrower, since there is less variability in the sample metric.
+    \item \textbf{Sample size}: The larger the sample size, the narrower the confidence interval, since there is less variability in the sample metric across different samples.
 \end{itemize}
 If you have not the luxury of a large sample size, you can do some statistical testing to understand how much the sample metric is close to the true metric.
 
-\paragraph{Remark:} Since we are working with estimated value, also the confidence interval is an estimate, and it is not guaranteed to contain the true metric with the specified confidence level.
-So it relative to the test sample we have, and its important to understand that the confidence interval is not a fixed range, but it can vary across different samples.
+\paragraph{Remark:} Since we are working with estimated values, the confidence interval itself is an estimate. 
+It is not guaranteed to contain the true metric with the specified confidence level for any single realization. 
+The interval is relative to the specific test sample collected; therefore, it is not a fixed range but one that varies across different samples.
 
-\paragraph{Standard Deviation and Standard Error:} 
-The standard deviation of the sample metric is a measure of how much the sample metric varies across different samples.
-The standard error is the standard deviation of the sample mean, which is the sample metric in this case, and it is computed as the standard deviation divided by the square root of the sample size.
-\\\\
-The standard deviation is the measure of \textbf{spread} of the sample metric, meanwhile the \textbf{confidence interval} and standard error are measures of \textbf{uncertainty} around the true metric.
-This makes the two concepts different.
+\subsubsection*{Standard Deviation and Standard Error}
+The \textbf{standard deviation} ($\sigma$) measures the amount of variation or dispersion 
+within a set of data values. 
+In the context of a sampling distribution, the region spanning approximately two standard errors to the left 
+and two to the right of the sample mean (a total range of four standard errors) 
+contains roughly 95\% of the sample metrics across different samples.
+Consequently, this interval $[\bar{x} - 2SE, \bar{x} + 2SE]$ represents a 95\% \textbf{confidence interval} for the true population metric.
+
+The \textbf{standard error} (SE) is the standard deviation of the sampling distribution of a statistic, 
+most commonly the sample mean. It quantifies the uncertainty of the sample estimate. It is computed as:
+\[
+    SEM = \frac{\sigma}{\sqrt{n}}
+\]
+Where $\sigma$ is the standard deviation of the individual observations and $n$ is the sample size.
+
+While the standard deviation is a measure of the \textbf{spread} of the underlying data, 
+the standard error and the confidence interval are measures of \textbf{uncertainty} 
+regarding the true population parameter. 
+Increasing the sample size $n$ will typically decrease the standard error, thereby narrowing the confidence interval, even if the underlying standard deviation of the population remains constant.
+
 
 \subsection{Randomness}
-In ML we know that, the results of an experiment can completely change by rerunning due to the \textbf{random initialization} of the model.
-Also \textbf{data sampling} can introduce randomness, due to the fact that we are working with a sample of data, and not the entire population.
-\\\\
-This is why we need to evaluate how much the results are robust to randomness.
-For random initialization, it's enough to run the experiment multiple times, but how we test the robustness to data sampling?
+\subsection{Randomness}
+In machine learning, the results of an experiment can vary significantly upon rerunning due to \textbf{random initialization} 
+of model weights and stochastic optimization processes. 
+Additionally, \textbf{data sampling} introduces randomness because the available dataset is merely a single realization of a larger, underlying population.
 
+To evaluate robustness to random initialization, executing the experiment multiple times with different seeds is often sufficient. 
+To test robustness to data sampling, we typically employ the approaches described in the following sections.
+
+\begin{comment}
+    #TODO: go on from this
+\end{comment}
 \subsubsection{Resampling Methods}
 The basic approach is to analyze the \textbf{standard deviation} of the sample metric across different samples, and to compute confidence intervals for the true metric.
 Through cross-validation, we can compute the sample metric on different subsets of the data, and analyze how much it varies across these subsets.
