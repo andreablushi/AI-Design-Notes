@@ -51,4 +51,19 @@ Different queries may require different sequences of tools. For example:
     \item \textbf{Query 3:} "Segments and churn prediction for age=29, income=50k..." $\rightarrow$ Explore Data $\rightarrow$ Cluster Data $\rightarrow$ Classify Data.
 \end{itemize}
 
-\subsection{The Control Problem}
+\subsection{Problems with tool use}
+The usual problem with multi-tool agents is that they can get stuck in loops, calling the same tool repeatedly without making progress towards the final goal.
+To mitigate this issue, we can implement a control mechanism that allows the use of a tool if and only if the following conditions are met:
+\begin{enumerate}
+    \item Some part of the original query is still unanswered;
+    \item Another available tool can resolve it;
+    \item The tool call is necessary, not just helpful.
+\end{enumerate}
+This should help the agent avoid common pitfalls, such as calling tools just for the sake of calling them, or getting stuck in a loop with no progress.
+
+Another approach, particularly useful when queries are complex or ambiguous, is to allow the agent to ask for clarification 
+from the user before deciding which tool to call next.
+
+Keep in mind that how we design the tools and their interfaces can also influence how effectively the agent uses them.
+In fact, the model picks them based on their descriptions and parameters. Therefore, it's important to
+make them as clear and informative as possible, to help the model understand when and how to use them effectively.
