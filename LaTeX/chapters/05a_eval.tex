@@ -189,8 +189,6 @@ the standard error and the confidence interval are measures of \textbf{uncertain
 regarding the true population parameter. 
 Increasing the sample size $n$ will typically decrease the standard error, thereby narrowing the confidence interval, even if the underlying standard deviation of the population remains constant.
 
-
-\subsection{Randomness}
 \subsection{Randomness}
 In machine learning, the results of an experiment can vary significantly upon rerunning due to \textbf{random initialization} 
 of model weights and stochastic optimization processes. 
@@ -200,137 +198,152 @@ To evaluate robustness to random initialization, executing the experiment multip
 To test robustness to data sampling, we typically employ the approaches described in the following sections.
 
 \begin{comment}
-    #TODO: go on from this
+    #TODO: go on from this DONE BY ANDREA
 \end{comment}
-\subsubsection{Resampling Methods}
-The basic approach is to analyze the \textbf{standard deviation} of the sample metric across different samples, and to compute confidence intervals for the true metric.
-Through cross-validation, we can compute the sample metric on different subsets of the data, and analyze how much it varies across these subsets.
-This allows us to assess the robustness of our results to data sampling, and to understand how much the sample metric is likely to vary if we were to collect a different sample of data.
-\\\\
-However, as we increase the number of repeats, we are incrementing the overlap between the samples, especially if we are working with a small dataset.
+\subsubsection*{Resampling Methods}
+To assess how much our evaluation metric might fluctuate due to data sampling, we rely on \textbf{resampling methods}.
+The core idea is to repeatedly recompute the sample metric on different subsets of the data, allowing us to estimate its standard deviation and construct confidence intervals for the true metric.
 
-\subsubsection{Bootstraping Methods}
-An alternative approach is to use bootstraping methods, in which we \textbf{resample with replacement} from the original dataset to create multiple bootstrap samples.
-This allows us to sample a dataset that is exactly the same size as the original dataset, permitting us to resample as many times as we want without worrying about overlap between samples.
-\\
-This method approximates the data distribution in a very precisely way.
+For instance, in cross-validation, we compute the metric on each splitted fold.
+By analyzing how much the metric varies across these folds, we gain insight into the robustness of our results and the degree to which they depend on the particular sample at hand.
+
+However, as we increase the number of repetitions, especially with small datasets, the overlap between samples also increases, which can limit the independence of our estimates.
+
+\subsubsection*{Bootstraping Methods}
+An alternative approach is to use \textbf{bootstrapping methods}, where we repeatedly \textbf{resample with replacement} from the original dataset to generate multiple new samples, called bootstrap samples.
+Each bootstrap sample is the same size as the original dataset, but because sampling is done with replacement, some data points may appear multiple times or not at all.
+
+This technique allows us to create as many resampled datasets as needed, without being limited by overlap concerns.
+By evaluating our metric on each bootstrap sample, we can estimate its variability and construct confidence intervals, often with greater flexibility than traditional resampling methods.
+
+In practice, bootstrapping provides a powerful way to approximate the underlying data distribution.
 
 \subsection{Evaluating Regression}
-When computing a continuous metric, such as the mean squared error $m$, we assume individual observations are distributed around a true metric.
-The sample mean (computed from the results of the testing) serves as a point estimate of this expectation, but it is itself a random variable.
-Across different samples, the sample mean follows a Student's t-distribution which converges to a normal distribution for sample sizes $n > 30$, centered at the true mean.
-This allows us to compute confidence intervals for the true metric based on the sample mean and its variability.
+When evaluating regression models, we need to compute continuous metrics such as the \textbf{mean squared error} ($\text{MSE}$).
+Here, we assume that each observation is drawn from a distribution centered around some true underlying value.
+The sample mean, calculated from our test results, provides a point estimate of this true metric.
+However, it is important to remember that the sample mean itself is a random variable, and it will vary from sample to sample.
 
-\subsubsection{Metrics}
-The most common metrics for regression is the mean squared error (MSE), which measures the average squared difference between the predicted values and the true values.
-However, also RMSE (root mean squared error) is used, which is the square root of MSE, and it is more interpretable since it is in the same units as the original data, instead of being in squared units.
+For small sample sizes, the distribution of the sample mean follows a Student's t-distribution, which approaches a normal distribution as the sample size increases ($n > 30$), both centered at the true mean.
+This statistical framework enables us to construct confidence intervals for the true metric, using the sample mean and its observed variability across samples.
+
+Other metrics for regression include the \textbf{mean absolute error} ($\text{MAE}$), which measures the average absolute difference between the predicted values and the true values, 
+and the \textbf{root mean squared error} ($\text{RMSE}$), which is the square root of the MSE and provides an interpretable metric in the same units as the original data.
 
 \subsubsection{Bias and Variance}
-Bias and variance are two sources of error in regression models.
-Those definitions are strictly related to the MSE, but they can be extended to other metrics as well.
+Bias and variance are two fundamental sources of error in regression models, and their definitions are closely tied to the mean squared error (MSE), though they can be extended to other metrics as well.
 \begin{itemize}
-    \item \textbf{Bias} It's the difference between your optimal MSE and the true MSE, and it is a measure of how much your model is underfitting the data.
-    This part remains the same also if you resample the data, since it is a property of the model itself, and not of the data.
-    \item \textbf{Variance} It's the difference between the true MSE and the measure (across samples), and it is a measure of how much your model is overfitting the data.
-    This part can vary across different samples, since it is a property of the data, and not of the model itself.
+    \item \textbf{Bias}: This is the difference between the optimal MSE (the lowest possible error for your model class) and the true MSE.
+    Bias reflects how much your model is systematically underfitting the data.
+    Importantly, bias remains unchanged even if you resample the data, as it is an inherent property of the model itself, not the data.
+    \item \textbf{Variance}: This is the difference between the true MSE and the observed MSE across different samples.
+    Variance captures how much your model's predictions fluctuate due to variations in the training data.
+    Unlike bias, variance can change from sample to sample, since it depends on the data rather than the model.
 \end{itemize}
-Often the bias and variance are in a trade-off, since increasing the complexity of the model can reduce the bias but increase the variance, and vice versa.
+Typically, there is a trade-off between bias and variance: increasing model complexity tends to reduce bias but increase variance, while simpler models have higher bias and lower variance.
 
 \subsection{Evaluating Classification}
-When evaluating classification models, we often use metrics such as accuracy, precision, recall, and F1-score.
-These metrics are based on the confusion matrix, which counts the number of true positives, true negatives, false positives, and false negatives.
-
-\subsubsection{Class Imbalance}
-It can happen that the classes in the dataset are imbalanced, meaning that one class is much more frequent than the other.
-In this case, getting a accuracy of 90\% can be \textbf{misleading}, since the model can simply predict the majority class and still achieve a high accuracy.
-\\
-In production, this can lead to a model that performs poorly on the minority class, which can be critical in certain applications, such as fraud detection or medical diagnosis.
-\\\\
-Another problematic case, could be the one where all the minority class is contained in the test set, and the model is not able to learn anything about it, since it is not present in the training set.
-This can lead to a model that performs very poorly on the test set, and it is not able to generalize to new data.
-
-\subsubsection{Cost Imbalance}
-In some cases, the cost of misclassifying one class can be much higher than the cost of misclassifying the other class.
-For example, in medical diagnosis, misclassifying a sick patient as healthy can have much more severe consequences than misclassifying a healthy patient as sick.
-\\
-In these cases, it's important to use metrics that take into account the class imbalance and cost imbalance.
-We can tune our error by multiplying the error of each class by a cost factor, which can be determined based on the specific application and the relative importance of the classes.
-\\\\
-It's important to note that, in both cases, the cost is never zero, even in the example of medical diagnosis, since misclassifying a healthy patient as sick can lead to unnecessary treatments and anxiety for the patient.
-Especially in social applications, where could bring to a lot of ethical issues.
+When evaluating classification models, we rely on metrics such as accuracy, precision, recall, and F1-score. These metrics are derived from the confusion matrix, which summarizes the counts of true positives, true negatives, false positives, and false negatives.
 
 \subsubsection{Confusion Matrix}
-The confusion matrix is a table that summarizes the performance of a classification model by counting the number of true positives, true negatives, false positives, and false negatives.
-This allows us to compute various metrics.
-\\\\
-However it's difficult to compare two models based on the confusion matrix, but it can give good insights on the single model works.
-The problems previously described affects the diagonal of the confusion matrix (false positives and false negatives - misclassifications) %He wrotes this, but doesn't make sense
-\\\\
-You can plot the confusion matrix both for the training set, validation set, and test set, giving different insights on the three sets.
+The confusion matrix summarizes a classification model's performance by counting true positives, true negatives, false positives, and false negatives.
+From this table, we can compute a variety of metrics to evaluate the model, for example the \textbf{accuracy}, which is the proportion of correctly classified instances.
+While it can be challenging to directly compare two models using only their confusion matrices, this tool provides valuable insights into the types of errors a single model makes.
+
+\subsubsection*{Application of Confusion Matrix}
+Plotting the confusion matrix for the training, validation, and test sets provides valuable insights into model behavior and helps diagnose issues like overfitting or poor generalization.
+
+Typically, we use \textbf{test accuracy} to assess the validity of our conclusions, \textbf{validation accuracy} to tune hyperparameters, and \textbf{training accuracy} to compare against validation accuracy (the \textbf{generalization gap}) to detect overfitting or underfitting.
+Training accuracy alone should not be used for model evaluation.
+
+\subsubsection{Imbalance Issues}
+Imbalance issues arise when classes are not equally represented or have different importance.
+
+\textbf{Class imbalance} occurs when one class is much more frequent than the other, making high accuracy misleading.
+For example, a model may simply predict the majority class and still achieve a high score.
+If the minority class is underrepresented in the training set, the model may fail to learn about it, resulting in poor generalization to new data.
+
+Furthermore, the cost of misclassifying one class (\textbf{cost imbalance}) can be much higher than the other (e.g., failing to detect a sick patient is typically worse than a false alarm).
+In such cases, it is important to use metrics and error calculations that reflect both class imbalance and cost imbalance, often by weighting errors according to their impact based on the specific application.
 
 \subsubsection{Precision and Recall}
-\textbf{Precision} is the ratio of true positives to the total number of predicted positives, while \textbf{recall} is the ratio of true positives to the total number of actual positives.
-In order to handle class imbalance, we need to trade-off between precision and recall, since increasing precision can lead to a decrease in recall, and vice versa.
-\\
-To help us in this trade-off, we can plot the precision and recall for different classifier.
+\textbf{Precision} measures the proportion of predicted positives that are actually correct, while \textbf{recall} measures the proportion of actual positives that are correctly identified.
+\[
+    Precision = \frac{TP}{TP + FP} \quad\quad Recall = \frac{TP}{TP + FN}
+\]
+There is often a trade-off between precision and recall, especially in the presence of class imbalance: increasing one can decrease the other. 
+Plotting precision and recall for different classifiers or thresholds helps visualize and manage this trade-off.
 
-\subsubsection{TPR and FPR - ROC space}
-\textbf{TPR} (True Positive Rate) is the ratio of true positives to the total number of actual positives, while \textbf{FPR} (False Positive Rate) is the ratio of false positives to the total number of actual negatives.
-We want to maximize TPR and minimize FPR, but as before there is a trade-off between the two.
-The optimal space is TPR/FPR = 1, which means that we are maximizing TPR and minimizing FPR at the same time, this is called the \textbf{ROC space} (Receiver Operating Characteristic).
+\subsubsection{ROC Space: True Positive Rate vs False Positive Rate}
+\textbf{TPR} (True Positive Rate) measures the proportion of actual positives correctly identified, while \textbf{FPR} (False Positive Rate) measures the proportion of actual negatives incorrectly classified as positives.
+\[
+    TPR = \frac{TP}{TP + FN} \quad\quad FPR = \frac{FP}{FP + TN}
+\]
+The trade-off between maximizing TPR and minimizing FPR is visualized in the \textbf{ROC curve} (Receiver Operating Characteristic), where the ideal point is TPR = 1 and FPR = 0.
+The ROC curve helps compare classifiers across different thresholds.
 
-\subsubsection{Plotting thesholds}
-Until now we have been talking about the comparison of different models, but we can also compare the same model with different thresholds (eager to predict positive).
-If we have a shy model (high threshold), we would not predict anything, however if we have a bold model (low threshold), we would predict everything as positive even risking misclassifications.
-The curve that we have, it can be a good way to compare the performance of the model across different thresholds, and to choose the optimal threshold based on the specific application and the trade-off between precision and recall.
-\\\\
-However, this is possible only if the model outputs is \textbf{ranking classifier} (i.e., it provides a score for each instance), which is not always the case, since some models output a binary prediction without a score.
-In this case, the \textbf{ranking error} is the error measured in confidence, if we predict a positive class with a high confidence, but it is actually a negative class, this would be an high ranking error.
+\subsubsection{Plotting thresholds}
+So far, we have discussed comparing different models, but we can also evaluate a single model by varying its decision threshold.
+This analysis is meaningful and possible only if the model is a \textbf{ranking classifier}, that is, it outputs a continuous score or probability for each instance.
+For ranking classifiers, \textbf{ranking error} refers to cases where the model assigns high confidence to incorrect predictions (e.g., predicting positive with high confidence when the true label is negative).
+
+For instance, when using a high threshold ("shy" model) results in few positive predictions, while a low threshold ("bold" model) predicts more positives, increasing the risk of false positives.
+Plotting performance metrics (such as ROC or Precision-Recall curves) across thresholds helps visualize this trade-off and select the optimal threshold for a specific application.
+
+\subsubsection{Coverage Matrix} %TODO: Choose which to keep and if its right,
+For ranking classifiers, we can visualize their predictions using a \textbf{coverage matrix}.
+In this plot, the x-axis represents the confidence for the negative class, and the y-axis represents the confidence for the positive class.
+
+Points near the top right corner show strong confidence in predicting positive, while points near the bottom left show strong confidence in predicting negative.
+By coloring each point according to the predicted class (after applying a threshold), we get an intuitive visual summary of how well the model separates the two classes.
 
 \subsubsection{Coverage Matrix}
-Given a model that outputs a ranking/score, we can plot the coverage matrix, with negative class on the x-axis and positive class on the y-axis.
-Basically the more confident the model is predicting a positive class, the closer the point is to the top right corner, while the more confident the model is predicting a negative class, the closer the point is to the bottom left corner.
-Then coloring binary the points based on the predicted class (after thesholding), we can have a good visual representation of the performance of the model.
+For ranking classifiers, a \textbf{coverage matrix} visualizes all possible pairs of positive (rows) and negative (columns) examples.
+Each cell compares a positive example $x^+$ and a negative example $x^-$ using the model score $s(\cdot)$:
+\begin{itemize}
+    \item \textbf{Green cell}: $s(x^+) > s(x^-)$ — the model correctly ranks the positive above the negative.
+    \item \textbf{Red cell}: $s(x^+) \leq s(x^-)$ — the model ranks the pair incorrectly (ranking error).
+\end{itemize}
+The proportion of red cells is the probability of making a ranking error.
 
-\subsubsection{AUC}
-The AUC (Area Under the Curve) is a metric that summarizes the performance of a classification model across all possible thresholds.
-It is computed as the area under the ROC curve, and can be used to compare different models.
-If we normalize the coverage matrix, we get the ROC curve, and the AUC is the area under this curve.
-The AUC (in ROC space) is an estimate of the probability that a ranking classifier puts a randomly drawn pair of positive and negative examples in the correct order.
-\\\\
-Lets now look how to works for another type of classifier.
-The decision tree is an example of a \textbf{partitioning classifier}, and how we get a ranking from a classifier that depends entirely on the model class, in other words, it depends on the way the model is built.
-\\
-If we choose to use the proportion of positive point for each segment (leaf) as the score, and we then put all the points in one region on the same level in the ranking.
-This means that some pairs of points will have the same score, and this can lead to ties in the ranking.
-Then, for large datasets, these regions will not contribute much to the total curve.
+By introducing a threshold $\tau$ on $s(\cdot)$, we turn the scores into binary predictions: $s(x) \geq \tau$ is classified as positive. 
+Varying $\tau$ changes which pairs are correctly ordered, linking the coverage matrix to the ROC curve.
+
+\subsubsection{Area Under the Curve (AUC)}
+The \textbf{AUC} (Area Under the Curve) is a single metric that summarizes a model's performance across all possible thresholds.
+It is calculated as the area under the ROC curve and is widely used to compare different classifiers.
+
+Intuitively, the AUC represents the probability that a ranking classifier assigns a higher score to a randomly chosen positive example than to a randomly chosen negative one.
+In other words, it quantifies how well the model ranks positive examples above negative ones, regardless of the specific threshold used for classification.
+In terms of the coverage matrix, the AUC is the proportion of green cells (correctly ranked pairs).
+
+\paragraph{Partitioning Classifiers}
+For some models, such as decision trees (\textbf{partitioning classifiers}), scores are assigned based on regions or leaves.
+If we use the proportion of positive points in each leaf as the score, all points in the same leaf share the same score.
+This can result in ties, where some pairs cannot be strictly ranked.
+For large datasets, these ties have less impact on the overall AUC.
 
 \subsubsection{Precision-Recall Curve}
-The Precision-Recall curve is another way to evaluate the performance of a classification model, similar to the ROC curve, but in the axis we have precision and recall instead of TPR and FPR.
-The area under the Precision-Recall curve (AUC-PR) can be used as a metric to compare different models, especially in cases of class imbalance, where the ROC curve can be misleading.
-\\
-However in some cases, the Precision-Recall curve can be more difficult to interpret than the ROC curve, since it is not normalized and it can be affected by the class imbalance in a different way than the ROC curve.
-Both curves can be useful in different scenarios, it's suggested to plot both.
+The \textbf{Precision-Recall (PR) curve} is another tool for evaluating classification models.
+Instead of plotting TPR vs. FPR (as in the ROC curve), the PR curve plots precision against recall for different thresholds.
 
-\subsubsection{Use of Metrics}
-There are many others metrics that can be used to evaluate classification models, and they can be applied to all the sets (training, validation, and test set).
-For instance, if we compute the accuracy on the test set, we are talking about the \textbf{test accuracy}, used to show if our conclusions are valid.
-Meanwhile, the \textbf{validation accuracy} is used to tune the hyperparameters of the model.
-And the \textbf{training accuracy}, which is used in comparison with the validation accuracy (difference \textbf{generalization gap}) to understand if the model is overfitting or underfitting the data.
-It's important to note that it's not used for evaluating on the training set.
+The area under the PR curve (AUC-PR) provides a single-number summary, which is especially informative when dealing with imbalanced datasets—situations where the ROC curve may be overly optimistic.
+
+However, the PR curve is not normalized and can be harder to interpret than the ROC curve, as its baseline depends on the proportion of positive examples.
+Both curves offer complementary insights, so it is often helpful to plot and compare them together.
 
 \subsection{No Free Lunch Theorem}
-A question that often aries is: which classifier, model, search methods is the best?
-The aim is to make a guess before seeing data, but the No Free Lunch Theorem states that is not possible.
-\\\\
-If you average over every possible problem, no optimization or learning algorithm is better than any other.
-An algorithm only looks good when the problem happens to match its assumptions.
-This means that there is no universally best model or algorithm. (\textbf{problem of induction})
-\\\\
-The \textbf{inductive bias} of a learning algorithm or model are those assumptions about the domain that are explicitly or implicitly hardcoded into the model.
-In other words, the inductive bias is the set of assumptions that a model makes about the data in order to generalize from the training data to unseen data.
-As a computer scientist, we need to figure out which of the many possible inductive biases is the best for our problem.
-For instance a linear model has a strong inductive bias towards linear relationships between features and the target variable.
-\\\\
-Finally, when two models explain the data equally well, we usually prefer the simpler one.
-The intuition is that simple patterns are more likely than very complex ones, so learning methods often include a built-in \textbf{bias toward simplicity}.
+
+It is natural to ask: which classifier, model, or search method is the best?
+The \textbf{No Free Lunch Theorem} tells us that, without knowing the specific problem, there is no universally best algorithm.
+
+If we average over all possible problems, every optimization or learning algorithm performs equally well.
+An algorithm only excels when its assumptions match the problem at hand.
+This is known as the \textbf{problem of induction}.
+Every learning algorithm or model has an \textbf{inductive bias}: a set of built-in assumptions about the data.
+Inductive bias determines how a model generalizes from training data to unseen data.
+For example, a linear model assumes linear relationships between features and the target variable.
+
+As practitioners, our task is to choose the inductive bias that best fits our problem.
+When two models explain the data equally well, we usually prefer the simpler one, following the principle that simple patterns are more likely than complex ones.
+This is why many learning methods include a built-in \textbf{bias toward simplicity}.
