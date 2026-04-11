@@ -124,6 +124,26 @@ Other important discrete random variables include:
 
 \subsection{Mastering Uncertainty}
 
+\subsubsection{Conditional Probability}
+The \textbf{conditional probability} of an event $E$ given another event $F$ occurred is defined as:
+\begin{equation}
+    P(E|F) = \frac{P(E \cap F)}{P(F)}
+\end{equation}
+The \textbf{chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
+\begin{equation}
+    P(E \cap F) = P (E,F) = P(E|F) P(F) = P(F|E) P(E)
+\end{equation}
+The \textbf{generalized chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
+\begin{equation}
+    P(E_1, E_2, ..., E_n) = P(E_1) P(E_2|E_1) P(E_3|E_1, E_2) ... P(E_n|E_1, E_2, ..., E_{n-1})
+\end{equation}
+If we have $P(F)=0$, then $P(E|F)$ is undefined, in other words, we cannot condition on an event that has zero probability of occurring.
+\\\\
+If $E$ and $F$ are \textbf{independent} events, then the occurrence of one does not affect the probability of the other, and we have:
+\begin{equation}
+    P(E \cap F) = = P(E|F)P(F) = P(E)P(F) 
+\end{equation}
+
 \subsubsection{Expectation}
 The \textbf{expectation} is the summation of all possible values of a random variable, weighted by their probabilities.
 It's also called mean, weighted average, or center of mass, and represents the average value we would expect from a random variable.
@@ -139,9 +159,23 @@ Basically, we are calculating the average of the observed values, which is an es
 \\\\
 The expectation has several important \textbf{properties}:
 \begin{itemize}
-    \item \textbf{Linearity}: $E[aX + bY] = aE[X] + bE[Y]$ 
-    \item \textbf{Expectation of a sum}: $E[X + Y] = E[X] + E[Y]$
-    \item \textbf{Unconscious Statistician}: $E[g(X)] = \sum_{x \in S} g(x) P(X=x)$, where $g$ is a function of the random variable $X$.
+    \item \textbf{Linearity}: 
+    \[
+        E[aX + bY] = aE[X] + bE[Y]
+    \]
+    \item \textbf{Expectation of a sum}: 
+        \[
+            E[X + Y] = E[X] + E[Y]
+        \]
+    \item \textbf{Unconscious Statistician}: 
+        \[
+            E[g(X)] = \sum_{x \in S} g(x) P(X=x)
+        \]
+    \item \textbf{ Law of Total Expectation}: For any random variables $X$ and $Y$, we have:
+        \[
+            E[X] = \sum_{y \in S} E[X|Y=y] P(Y=y)
+        \]
+        Where $E[X|Y=y]$ is the conditional expectation of $X$ given $Y=y$.
 \end{itemize}
 
 \textbf{Foundational random variables} have specific expectations:
@@ -200,26 +234,6 @@ Key properties of variance include:
     \]
 \end{itemize}
 
-\subsubsection{Conditional Probability}
-The \textbf{conditional probability} of an event $E$ given another event $F$ occurred is defined as:
-\begin{equation}
-    P(E|F) = \frac{P(E \cap F)}{P(F)}
-\end{equation}
-The \textbf{chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
-\begin{equation}
-    P(E \cap F) = P (E,F) = P(E|F) P(F) = P(F|E) P(E)
-\end{equation}
-The \textbf{generalized chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
-\begin{equation}
-    P(E_1, E_2, ..., E_n) = P(E_1) P(E_2|E_1) P(E_3|E_1, E_2) ... P(E_n|E_1, E_2, ..., E_{n-1})
-\end{equation}
-If we have $P(F)=0$, then $P(E|F)$ is undefined, in other words, we cannot condition on an event that has zero probability of occurring.
-\\\\
-If $E$ and $F$ are \textbf{independent} events, then the occurrence of one does not affect the probability of the other, and we have:
-\begin{equation}
-    P(E \cap F) = = P(E|F)P(F) = P(E)P(F) 
-\end{equation}
-
 \subsubsection{Law of Total Probability} %#Skipped by the professor
 The \textbf{law of total probability} states that if $E_1, E_2, ..., E_n$ are mutually exclusive and exhaustive events, then for any event $F$, we have:
 \begin{equation}
@@ -243,3 +257,7 @@ All the terms in Bayes' theorem have specific names:
     \item $P(E)$ is the \textbf{prior probability}, which is the initial belief about the probability of event $E$ before observing evidence $F$.
     \item $P(F)$ is the \textbf{marginal likelihood} or \textbf{evidence}, which is the total probability of observing evidence $F$ under all possible events.
 \end{itemize}
+
+\subsection{Adding}
+
+\subsection{Bootstraping}
