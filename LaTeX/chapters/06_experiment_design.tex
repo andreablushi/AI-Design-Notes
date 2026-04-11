@@ -258,6 +258,115 @@ All the terms in Bayes' theorem have specific names:
     \item $P(F)$ is the \textbf{marginal likelihood} or \textbf{evidence}, which is the total probability of observing evidence $F$ under all possible events.
 \end{itemize}
 
+\subsection{Beta Distribution}
+The \textbf{beta distribution} is a continuous probability distribution defined on the interval $[0, 1]$.
+The probability density function of a beta random variable $X \sim Beta(\alpha, \beta)$ is:
+\[
+    f_X(x) = 
+    \begin{cases}
+        \frac{ x^{\alpha - 1} (1-x)^{\beta - 1} }{B(\alpha, \beta)} & \text{for } 0 < x < 1 \\
+        0 & \text{otherwise}
+    \end{cases}
+\]
+where $B$ is the beta function, defined as:
+\[
+    B(\alpha, \beta) = \int_0^1 t^{\alpha - 1} (1-t)^{\beta - 1} dt
+\]
+The beta distribution is flexible and can take various shapes depending on the values of $\alpha$ and $\beta$.
+\\
+A beta distribution with $\alpha = \beta = 1$ is a uniform distribution on the interval $[0, 1]$.
+\\\\
+The \textbf{expectation} of a beta random variable is given by:
+\begin{equation}
+    E[X] = \frac{\alpha}{\alpha + \beta}
+\end{equation}
+The \textbf{variance} of a beta random variable is given by:
+\begin{equation}
+    Var(X) = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}
+\end{equation}
+
+\subsubsection{Experiment Design with Beta Distribution}
+Beta parameters $\alpha$ and $\beta$ can come from an experiment as number of successes and failures, respectively.
+If we have observed $s$ successes and $f$ failures, we can set $\alpha = s + 1$ and $\beta = f + 1$ to get the posterior distribution of the probability of success.
+This is helpful because it allows us to update our beliefs about the probability of success as we collect more data.
+\\\\
+We set $+1$ since we start from a uniform distribution, representing a state of complete uncertainty about the probability of success before observing any data.
+This represent a prior belief without any evidence, and allows us to incorporate the observed data in a way that reflects our updated beliefs about the probability of success.
+\\\\
+If we have instead already experienced $s$ successes and $f$ failures previously, having a prior belief about the probability of success, we can set $\alpha = s + \alpha_0$ and $\beta = f + \beta_0$, where $\alpha_0$ and $\beta_0$ are the parameters of our prior distribution.
+This creates a new posterior distribution that combines our prior belief with the observed data, allowing us to make more informed decisions.
+\\\\
+Then if we want to calculate the probability that the random variables is greater than a certain value $x$, we can calculate the cumulative distribution function (CDF) of the beta distribution:
+\begin{equation}
+    P(X > x) = 1 - F_X(x) = 1 - \int_0^x f_X(t) dt
+\end{equation}
+This allows us to make probabilistic statements about the likelihood of the random variable exceeding a certain threshold.
+
 \subsection{Adding}
+In some cases, we may want to add two random variables together, for example, to calculate the total number of successes in two independent experiments.
+If $A$ and $B$ are two independent random variables, then the probability of the random variable $C$ representing the sum of $A$ and $B$ can be calculated through the law of total probability:
+\begin{equation}
+    P(C=k) = P(A+B=k) = \sum_{i=0}^{k} P(A=i) P(B=k-i)
+\end{equation}
+The basic idea is to consider all possible ways that the sum $C$ can equal $k$ by summing over all possible values of $A$ and $B$ that add up to $k$.
+\\
+However, if $A$ and $B$ are not discrete random variables, we would need to use the convolution of their probability density functions to calculate the distribution of their sum.
+\begin{equation}
+    f_C(c) = \int_{-\infty}^{\infty} f_A(a) f_B(c - a) da
+\end{equation}
+The idea is to integrate over all possible values of $A$ and $B$ that sum up to $c$, weighted by their respective probability densities.
+\\\\
+Sometimes, we variables are \textbf{i.i.d.} (independent and identically distributed), meaning they have the same:
+\begin{itemize}
+    \item All have the same distribution
+    \item All have the same expectation
+    \item All have the same variance
+\end{itemize}
+This simplifies the calculation of the distribution of their sum, since we can use the properties of the distribution to derive the distribution of the sum.
+
+\subsubsection{Sum of Foundational Random Variables}
+\begin{itemize}
+    \item \textbf{Sum of Binomial Random Variables}: 
+    \[
+        X_1 \sim Bin(n_1, p), \quad X_2 \sim Bin(n_2, p) \implies X_1 + X_2 \sim Bin(n_1 + n_2, p)
+    \]
+    \item \textbf{Sum of Bernoulli Random Variables}:
+    \[
+        X_1 \sim Ber(p), \quad X_2 \sim Ber(p) \implies X_1 + X_2 \sim Bin(2, p)
+    \]
+    \item \textbf{Sum of Normal Random Variables}:
+    \[
+        X_1 \sim N(\mu_1, \sigma_1^2), \quad X_2 \sim N(\mu_2, \sigma_2^2) \implies X_1 + X_2 \sim N(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)
+    \]
+\end{itemize}
+
+\subsubsection{Central Limit Theorem}
+The \textbf{central limit theorem} states that the sum of a large number of independent and identically distributed random variables, each with finite mean and variance, will approximately follow a normal distribution, regardless of the original distribution of the variables.
+\[
+    \sum_{i=1}^{n} X_i \xrightarrow{d} N(n\mu, n\sigma^2) \quad \text{as } n \to \infty
+\]
+This implies that the sum of idd random variables is always \textbf{normally distributed}, where the $E[X_i] = \mu$ and $Var(X_i) = \sigma^2$ for all $i$.
+
+\subsubsection{Sample Mean and Sample Variance}
+Given a sample of $n$ independent and identically distributed random variables $X_1, X_2, ..., X_n$ with mean $\mu$ and variance $\sigma^2$, we can calculate the \textbf{sample mean} and \textbf{sample variance} as follows:
+\begin{equation}
+    \bar{X} = \frac{1}{n} \sum_{i=1}^{n} X_i
+\end{equation}
+\begin{equation}
+    S^2 = \frac{1}{n-1} \sum_{i=1}^{n} (X_i - \bar{X})^2
+\end{equation}
+The sample mean $\bar{X}$ is an unbiased estimator of the population mean $\mu$, and the sample variance $S^2$ is an unbiased estimator of the population variance $\sigma^2$.
 
 \subsection{Bootstraping}
+Bootrapping allows us to know the distribution of a statistic (e.g., mean, variance) and calculate $p$-values without making assumptions about the underlying distribution of the data.
+\\
+The idea is that we can approximate the real distribution of a statistic by sampling directly from the data we have, and calculating the statistic for each sample.
+So we want to estimate the PMF of a statistic $T$ trough this algorithm:
+\begin{enumerate}
+    \item Repeat $B$ times:
+    \begin{itemize}
+        \item Draw a bootstrap sample of size $n$ from the original data
+        \item Recalculate the statistic $T^*$ for the bootstrap sample
+    \end{itemize}
+\end{enumerate}
+In order to enhance we can use \textbf{resampling with replacement}, which means that we can draw the same data point multiple times in the bootstrap sample, increasing the data available for estimation.
