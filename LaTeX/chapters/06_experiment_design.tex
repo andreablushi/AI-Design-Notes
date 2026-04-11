@@ -1,5 +1,5 @@
 \section{Experiment Design} %#TODO: Refactoring
-%#TODO: Think if adding Self-solve agent and KB Gaps Analysis
+
 \subsection{Introduction}
 Any measurement, without knowledge of the uncertainty, is \textbf{meaningless}.
 Here, "meaningless" means a measurement lacks reliability if its uncertainty is unknown; without knowing its precision or accuracy, the value cannot be trusted or interpreted and may be \textbf{misleading}.
@@ -11,25 +11,6 @@ Experimental measurements are essential to understand system behavior, allowing 
     \item \textbf{Communicate} system behavior to others
 \end{itemize}
 This enables estimation of system performance for properties and conditions of interest.
-
-We focus on experimenting rather than just evaluating or testing because:
-\begin{itemize}
-    \item We always use a data sample, lacking access to all or future data
-    \item Results vary due to factors beyond the dataset (workflow, randomness, etc.)
-\end{itemize}
-
-We can experiment with various LLM system components:
-\begin{itemize}
-    \item \textbf{Document Base}: quality of the knowledge base or corpus
-    \item \textbf{Retrieval Algorithm}: effectiveness in finding information
-    \item \textbf{LLM Answer Generation}: quality of answers from context
-\end{itemize}
-Isolating what to test is harder than in traditional software due to interdependent components and less control.
-Some measures are end-to-end (whole system), others pinpoint where to intervene.
-
-If done and reported correctly, more experiments provide more information; otherwise, they introduce bias.
-
-Before starting, define uncertainty using basic probability principles.
 
 \subsection{Basic, Probabilities and Random Variables}
 
@@ -43,11 +24,9 @@ So, more generally the definition on which we are interested is "\textit{A belie
 More formally we define:
 \begin{itemize}
     \item \textbf{Sample Space (S)}: The set of all possible outcomes of an experiment.
-    \item \textbf{Outcome}: An outcome is a single element of the sample space.
     \item \textbf{Event (E)}: An event is a subset of the sample space that satisfies some conditions.
+    \item \textbf{Probability (P(E))}: A measure of the likelihood of an event occurring, defined on the sample space.
 \end{itemize}
-
-We define $P(E)$ as the probability of an event $E$ occurring, and we have the following axioms:
 
 More formally, we can define the two interpretations of probability as follows:
 \begin{itemize}
@@ -141,4 +120,126 @@ Other important discrete random variables include:
     \[ P(X=k) = (1-p)^{k-1} p \]
     \item \textbf{Negative Binomial}: Models the number of trials until a specified number of successes occurs.
     \[ P(X=k) = \binom{k-1}{r-1} p^r (1-p)^{k-r} \]
+\end{itemize}
+
+\subsection{Mastering Uncertainty}
+
+\subsubsection{Expectation}
+The \textbf{expectation} is the summation of all possible values of a random variable, weighted by their probabilities.
+It's also called mean, weighted average, or center of mass, and represents the average value we would expect from a random variable.
+\begin{equation}
+    E[X] = \sum_{x \in S} x P(X=x)
+\end{equation}
+If we want to calculate the calculation of the expectation from data, we can use the following formula:
+\begin{equation}
+    E[X] \approx \frac{1}{n} \sum_{i=1}^{n} x_i
+\end{equation}
+Where $x_i$ are the observed values of the random variable in our data, and $n$ is the number of observations.
+Basically, we are calculating the average of the observed values, which is an estimate of the true expectation.
+\\\\
+The expectation has several important \textbf{properties}:
+\begin{itemize}
+    \item \textbf{Linearity}: $E[aX + bY] = aE[X] + bE[Y]$ 
+    \item \textbf{Expectation of a sum}: $E[X + Y] = E[X] + E[Y]$
+    \item \textbf{Unconscious Statistician}: $E[g(X)] = \sum_{x \in S} g(x) P(X=x)$, where $g$ is a function of the random variable $X$.
+\end{itemize}
+
+\textbf{Foundational random variables} have specific expectations:
+\begin{itemize}
+    \item \textbf{Binomial random variable} $X \sim Bin(n, p)$, the expectation is:
+    \[
+        E[X] = np
+    \]
+    \item \textbf{Bernoulli random variable} $X \sim Ber(p)$, the expectation is:
+    \[
+        E[X] = p
+    \]
+    \item \textbf{Geometric random variable} $X \sim Geo(p)$, the expectation is:
+    \[    
+        E[X] = \frac{1}{p}
+    \]
+\end{itemize}
+
+However, the expectation is just a summary statistic, and it does not capture the variability of the random variable.
+If not used carefully, it can be misleading, since it does not provide information about the spread or shape of the distribution.
+
+\subsubsection{Variance}
+The \textbf{variance} of a random variable measures the spread or variability of its distribution.
+It is defined as the expected value of the squared deviation from the mean:
+\begin{equation}
+    Var(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2
+\end{equation}
+The variance is expressed in the square of the units of the random variable, which can make it less interpretable.
+Then can be heavily influenced by outliers, as it squares the deviations from the mean.
+\\\\
+Key properties of variance include:
+\begin{itemize}
+    \item \textbf{Non-negativity}: for any random variable $X$
+        \[
+            Var(X) \geq 0
+        \]
+    \item \textbf{Additivity for Independent Variables}: If $X$ and $Y$ are independent random variables
+        \[
+            Var(X + Y) = Var(X) + Var(Y)
+        \].
+    \item \textbf{Scaling}:for any constant $a$
+        \[
+            Var(aX) = a^2 Var(X)
+        \]
+    \item \textbf{Shift Invariance}: for any constant $c$
+        \[
+            Var(X + c) = Var(X)
+        \]
+    \item \textbf{Variance of a Sum}: For any random variables $X$ and $Y$
+    \[
+        Var(X + Y) = Var(X) + Var(Y) + 2Cov(X, Y)
+    \]
+    \item \textbf{Variance of Conditional Probability}: For any random variables $X$ and $Y$
+    \[
+        Var(X) = E[Var(X|Y)] + Var(E[X|Y])
+    \]
+\end{itemize}
+
+\subsubsection{Conditional Probability}
+The \textbf{conditional probability} of an event $E$ given another event $F$ occurred is defined as:
+\begin{equation}
+    P(E|F) = \frac{P(E \cap F)}{P(F)}
+\end{equation}
+The \textbf{chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
+\begin{equation}
+    P(E \cap F) = P (E,F) = P(E|F) P(F) = P(F|E) P(E)
+\end{equation}
+The \textbf{generalized chain rule} allows us to express the joint probability of multiple events in terms of conditional probabilities:
+\begin{equation}
+    P(E_1, E_2, ..., E_n) = P(E_1) P(E_2|E_1) P(E_3|E_1, E_2) ... P(E_n|E_1, E_2, ..., E_{n-1})
+\end{equation}
+If we have $P(F)=0$, then $P(E|F)$ is undefined, in other words, we cannot condition on an event that has zero probability of occurring.
+\\\\
+If $E$ and $F$ are \textbf{independent} events, then the occurrence of one does not affect the probability of the other, and we have:
+\begin{equation}
+    P(E \cap F) = = P(E|F)P(F) = P(E)P(F) 
+\end{equation}
+
+\subsubsection{Law of Total Probability} %#Skipped by the professor
+The \textbf{law of total probability} states that if $E_1, E_2, ..., E_n$ are mutually exclusive and exhaustive events, then for any event $F$, we have:
+\begin{equation}
+    P(F) = \sum_{i=1}^{n} P(F|E_i) P(E_i)
+\end{equation}
+This law allows us to calculate the probability of an event $F$ by considering all possible ways that $F$ can occur through the events $E_i$.
+If we have only two events $E$ and $E^C$, then the law of total probability simplifies to:
+\begin{equation}
+    P(F) = P(F|E) P(E) + P(F|E^C) P(E^C)
+\end{equation}
+
+\subsubsection{Bayes' Theorem}
+\textbf{Bayes' theorem} allows us to update our beliefs about the probability of an event $E$ given new evidence $F$:
+\begin{equation}
+    P(E|F) = \frac{P(F|E) P(E)}{P(F)}
+\end{equation}
+All the terms in Bayes' theorem have specific names:
+\begin{itemize}
+    \item $P(E|F)$ is the \textbf{posterior probability}, which is the updated probability of event $E$ after observing evidence $F$.
+    \item $P(F|E)$ is the \textbf{likelihood}, which is the probability of observing evidence $F$ given that event $E$ is true.
+    \item $P(E)$ is the \textbf{prior probability}, which is the initial belief about the probability of event $E$ before observing evidence $F$.
+    \item $P(F)$ is the \textbf{marginal likelihood} or \textbf{evidence}, which is the total probability of observing evidence $F$ under all possible events.
 \end{itemize}
