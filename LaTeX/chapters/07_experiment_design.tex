@@ -375,9 +375,21 @@ where $\alpha_0$ and $\beta_0$ are the parameters of our prior distribution, and
 
 This creates a new posterior distribution that combines our prior belief with the observed data, allowing us to make more informed decisions.
 
-\begin{comment}
-    #TODO: go on
-\end{comment}
+\subsubsection{Expected Value and Variance}
+The expected value of a beta distribution with parameters $\alpha$ and $\beta$ is given by:
+\begin{equation}
+    E[X] = \frac{\alpha}{\alpha + \beta}
+\end{equation}
+Where again $\alpha$ and $\beta$ are the parameters of the distribution, which can be interpreted respectively as the \textbf{number of successes} and the \textbf{number of failures} observed in the data.
+This means that the expected value of the beta distribution can be interpreted as the estimated probability of success based on the observed data and our prior beliefs.
+
+The variance of a beta distribution with parameters $\alpha$ and $\beta$ is given by:
+\begin{equation}
+    Var(X) = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}
+\end{equation}
+This variance captures the uncertainty in our estimate of the probability of success, and it decreases as we observe more data (i.e., as $\alpha$ and $\beta$ increase), 
+reflecting the fact that our estimate becomes more precise as we gather more evidence.
+
 \subsection{Adding Random Variables}
 In some cases, we may want to add two random variables together, for example, to calculate the total number of successes in two independent experiments.
 If $A$ and $B$ are two independent random variables, then the probability of the random variable $C$ representing the sum of $A$ and $B$ can be calculated through the law of total probability:
